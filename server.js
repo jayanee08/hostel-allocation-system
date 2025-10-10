@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const genAIService = require('./genai-service');
+// const genAIService = require('./genai-service');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -281,60 +281,21 @@ app.post('/api/toggle-room-status', async (req, res) => {
     }
 });
 
-// GenAI Routes
-
-// Smart Room Recommendations
+// GenAI Routes - Temporarily disabled for deployment
+/*
 app.post('/api/smart-recommendations', async (req, res) => {
-    try {
-        const { studentProfile, availableRooms } = req.body;
-        const recommendations = await genAIService.getSmartRoomRecommendations(studentProfile, availableRooms);
-        res.json({ success: true, recommendations });
-    } catch (error) {
-        console.error('Smart recommendations error:', error);
-        res.status(500).json({ success: false, message: 'Failed to get recommendations' });
-    }
+    res.json({ success: false, message: 'GenAI features coming soon' });
 });
 
-// Chatbot
 app.post('/api/chatbot', async (req, res) => {
-    try {
-        const { message, context } = req.body;
-        const response = await genAIService.getChatbotResponse(message, context);
-        res.json({ success: true, response });
-    } catch (error) {
-        console.error('Chatbot error:', error);
-        res.status(500).json({ success: false, message: 'Chatbot unavailable' });
-    }
+    res.json({ success: false, message: 'Chatbot coming soon' });
 });
-
-// Generate Room Description
-app.post('/api/generate-description', async (req, res) => {
-    try {
-        const { roomDetails } = req.body;
-        const description = await genAIService.generateRoomDescription(roomDetails);
-        res.json({ success: true, description });
-    } catch (error) {
-        console.error('Description generation error:', error);
-        res.status(500).json({ success: false, message: 'Failed to generate description' });
-    }
-});
-
-// Booking Analytics
-app.post('/api/booking-analytics', async (req, res) => {
-    try {
-        const { bookingData } = req.body;
-        const analytics = await genAIService.analyzeBookingPatterns(bookingData);
-        res.json({ success: true, analytics });
-    } catch (error) {
-        console.error('Analytics error:', error);
-        res.status(500).json({ success: false, message: 'Failed to analyze data' });
-    }
-});
+*/
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log('📱 Open your browser and go to: http://localhost:3002');
     console.log('🔐 Admin Login: admin@hostel.com / Admin123');
     console.log('👨🎓 Student Login: john@student.com / password123');
-    console.log('🤖 GenAI Features: Smart Recommendations, Chatbot, Analytics');
+    console.log('🏠 Hostel Management System Ready');
 });
