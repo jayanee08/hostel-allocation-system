@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Hostel System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">🎓 Student Portal</div>
+                <div class="nav-links">
+                    <span id="studentName">Student</span>
+                    <a href="index.html">🚪 Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard" style="margin-top: 80px;">
+        <div class="dashboard-header">
+            <h1 id="welcomeMessage">Welcome to Hostel Portal!</h1>
+            <p>Book your room, track your status, and manage your hostel experience</p>
+        </div>
+
+        <div class="section-nav">
+            <button class="active" onclick="showSection('profile')">👤 My Profile</button>
+            <button onclick="showSection('rooms')">🏠 Available Rooms</button>
+            <button onclick="showSection('bookings')">📋 My Bookings</button>
+            <button onclick="showSection('status')">📊 Booking Status</button>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection" class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="myBookingsCount">0</div>
+                    <h3>📋 My Bookings</h3>
+                    <p>Total booking requests</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedBookingsCount">0</div>
+                    <h3>✅ Approved</h3>
+                    <p>Successful bookings</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="availableRoomsCount">0</div>
+                    <h3>🏠 Available Rooms</h3>
+                    <p>Rooms you can book</p>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <h2 class="form-title">👤 My Profile Information</h2>
+                <div id="profileInfo" class="profile-details"></div>
+            </div>
+        </div>
+
+        <!-- Available Rooms Section -->
+        <div id="roomsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">🏠 Available Rooms for <span id="genderBlock"></span></h2>
+            
+            <div class="stats-grid" style="margin-bottom: 30px;">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAvailableRooms">0</div>
+                    <h3>🏠 Total Available</h3>
+                    <p>Ready for booking</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="singleRooms">0</div>
+                    <h3>🛏️ Single Rooms</h3>
+                    <p>Individual occupancy</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="doubleRooms">0</div>
+                    <h3>🛏️🛏️ Double Rooms</h3>
+                    <p>Shared occupancy</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="acRooms">0</div>
+                    <h3>❄️ AC Rooms</h3>
+                    <p>Air conditioned</p>
+                </div>
+            </div>
+
+            <div id="roomsGrid" class="room-grid"></div>
+        </div>
+
+        <!-- My Bookings Section -->
+        <div id="bookingsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">📋 My Booking History</h2>
+            
+            <div id="bookingsContainer">
+                <div id="noBookings" style="text-align: center; padding: 40px;">
+                    <h3>📝 No bookings yet</h3>
+                    <p>Start by browsing available rooms and make your first booking!</p>
+                    <button class="btn btn-primary" onclick="showSection('rooms')" style="margin-top: 20px;">
+                        🏠 Browse Rooms
+                    </button>
+                </div>
+                <div id="bookingsGrid" class="room-grid"></div>
+            </div>
+        </div>
+
+        <!-- Booking Status Section -->
+        <div id="statusSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">📊 Current Booking Status</h2>
+            
+            <div id="currentBookingStatus">
+                <div class="form-container">
+                    <div id="statusContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let myBookings = [];
+        let availableRooms = [];
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.section-nav button').forEach(b => b.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(section + 'Section').style.display = 'block';
+            event.target.classList.add('active');
+            
+            // Load section data
+            if (section === 'profile') {
+                loadProfile();
+            } else if (section === 'rooms') {
+                loadAvailableRooms();
+            } else if (section === 'bookings') {
+                loadMyBookings();
+            } else if (section === 'status') {
+                loadBookingStatus();
+            }
+        }
+
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = user;
+            document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.Name}! 🎉`;
+            document.getElementById('studentName').textContent = user.Name;
+            
+            // Load booking stats
+            loadBookingStats();
+            
+            document.getElementById('profileInfo').innerHTML = `
+                <div class="profile-item">
+                    <label>👤 Full Name:</label>
+                    <div class="profile-value">${user.Name}</div>
+                </div>
+                <div class="profile-item">
+                    <label>🎓 Register Number:</label>
+                    <div class="profile-value">${user.RegisterNumber}</div>
+                </div>
+                <div class="profile-item">
+                    <label>🏫 Department:</label>
+                    <div class="profile-value">${user.Department}</div>
+                </div>
+                <div class="profile-item">
+                    <label>⚧ Gender:</label>
+                    <div class="profile-value">${user.Gender}</div>
+                </div>
+                <div class="profile-item">
+                    <label>📧 Email:</label>
+                    <div class="profile-value">${user.Email}</div>
+                </div>
+                <div class="profile-item">
+                    <label>🏠 Eligible Block:</label>
+                    <div class="profile-value">${user.Gender === 'Male' ? 'Boys Block A' : 'Girls Block B'}</div>
+                </div>
+            `;
+        }
+
+        async function loadBookingStats() {
+            try {
+                const response = await fetch(`/api/bookings/${currentUser.UserID}`);
+                myBookings = await response.json();
+                
+                const approvedCount = myBookings.filter(b => b.Status === 'Approved').length;
+                
+                document.getElementById('myBookingsCount').textContent = myBookings.length;
+                document.getElementById('approvedBookingsCount').textContent = approvedCount;
+                
+                // Load available rooms count
+                const roomsResponse = await fetch(`/api/rooms/${currentUser.Gender}`);
+                availableRooms = await roomsResponse.json();
+                document.getElementById('availableRoomsCount').textContent = availableRooms.length;
+                
+            } catch (error) {
+                console.error('Failed to load booking stats:', error);
+            }
+        }
+
+        async function loadAvailableRooms() {
+            try {
+                const response = await fetch(`/api/rooms/${currentUser.Gender}`);
+                availableRooms = await response.json();
+                
+                const genderBlock = currentUser.Gender === 'Male' ? 'Boys Block A' : 'Girls Block B';
+                document.getElementById('genderBlock').textContent = genderBlock;
+                
+                // Update room statistics
+                const totalAvailable = availableRooms.length;
+                const singleRooms = availableRooms.filter(r => r.RoomType === 'Single').length;
+                const doubleRooms = availableRooms.filter(r => r.RoomType === 'Double').length;
+                const acRooms = availableRooms.filter(r => r.ACType === 'AC').length;
+                
+                document.getElementById('totalAvailableRooms').textContent = totalAvailable;
+                document.getElementById('singleRooms').textContent = singleRooms;
+                document.getElementById('doubleRooms').textContent = doubleRooms;
+                document.getElementById('acRooms').textContent = acRooms;
+                
+                const roomsGrid = document.getElementById('roomsGrid');
+                roomsGrid.innerHTML = '';
+                
+                if (availableRooms.length === 0) {
+                    roomsGrid.innerHTML = `
+                        <div style="text-align: center; padding: 40px; grid-column: 1 / -1;">
+                            <h3>😔 No rooms available</h3>
+                            <p>All rooms in ${genderBlock} are currently occupied.</p>
+                            <p>Please check back later or contact the admin.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                availableRooms.forEach(room => {
+                    const roomCard = document.createElement('div');
+                    roomCard.className = 'room-card room-available';
+                    roomCard.innerHTML = `
+                        <div class="room-header">
+                            <h3>🏠 ${room.BlockName}</h3>
+                            <span class="status approved">Available</span>
+                        </div>
+                        <div class="room-details">
+                            <p><strong>🏢 Floor:</strong> ${room.FloorNumber}</p>
+                            <p><strong>🚪 Room:</strong> ${room.RoomNumber}</p>
+                            <p><strong>🛏️ Type:</strong> ${room.RoomType}</p>
+                            <p><strong>❄️ AC:</strong> ${room.ACType}</p>
+                        </div>
+                        <div class="room-actions">
+                            <button class="btn btn-primary" onclick="bookRoom(${room.RoomID})" style="width: 100%;">
+                                📋 Book This Room
+                            </button>
+                        </div>
+                    `;
+                    roomsGrid.appendChild(roomCard);
+                });
+            } catch (error) {
+                alert('❌ Failed to load rooms');
+            }
+        }
+
+        async function bookRoom(roomId) {
+            if (!confirm('🤔 Are you sure you want to book this room?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: currentUser.UserID,
+                        roomId: roomId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('🎉 ' + data.message);
+                    loadAvailableRooms(); // Refresh available rooms
+                    loadBookingStats(); // Update stats
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Booking failed. Please try again.');
+            }
+        }
+
+        async function loadMyBookings() {
+            try {
+                const response = await fetch(`/api/bookings/${currentUser.UserID}`);
+                myBookings = await response.json();
+                
+                const bookingsGrid = document.getElementById('bookingsGrid');
+                const noBookings = document.getElementById('noBookings');
+                
+                if (myBookings.length === 0) {
+                    noBookings.style.display = 'block';
+                    bookingsGrid.style.display = 'none';
+                    return;
+                }
+                
+                noBookings.style.display = 'none';
+                bookingsGrid.style.display = 'grid';
+                bookingsGrid.innerHTML = '';
+                
+                myBookings.forEach(booking => {
+                    const bookingCard = document.createElement('div');
+                    bookingCard.className = 'room-card';
+                    
+                    const statusClass = booking.Status.toLowerCase();
+                    const statusIcon = booking.Status === 'Approved' ? '✅' : 
+                                     booking.Status === 'Rejected' ? '❌' : '⏳';
+                    
+                    bookingCard.innerHTML = `
+                        <div class="room-header">
+                            <h3>🏠 ${booking.BlockName}</h3>
+                            <span class="status ${statusClass}">${statusIcon} ${booking.Status}</span>
+                        </div>
+                        <div class="room-details">
+                            <p><strong>🏢 Floor:</strong> ${booking.FloorNumber}</p>
+                            <p><strong>🚪 Room:</strong> ${booking.RoomNumber}</p>
+                            <p><strong>🛏️ Type:</strong> ${booking.RoomType}</p>
+                            <p><strong>❄️ AC:</strong> ${booking.ACType}</p>
+                            <p><strong>📅 Booked:</strong> ${new Date(booking.BookingDate).toLocaleDateString()}</p>
+                        </div>
+                        ${booking.Status === 'Approved' ? 
+                            '<div class="room-actions"><p style="color: #4CAF50; text-align: center; font-weight: bold;">🎉 Congratulations! Your room is confirmed.</p></div>' : 
+                            booking.Status === 'Rejected' ? 
+                            '<div class="room-actions"><p style="color: #f44336; text-align: center;">😔 This booking was not successful. Try booking another room.</p></div>' :
+                            '<div class="room-actions"><p style="color: #ff9800; text-align: center;">⏳ Your booking is being processed...</p></div>'
+                        }
+                    `;
+                    bookingsGrid.appendChild(bookingCard);
+                });
+            } catch (error) {
+                alert('❌ Failed to load bookings');
+            }
+        }
+
+        async function loadBookingStatus() {
+            try {
+                const response = await fetch(`/api/bookings/${currentUser.UserID}`);
+                const bookings = await response.json();
+                
+                const statusContent = document.getElementById('statusContent');
+                
+                if (bookings.length === 0) {
+                    statusContent.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <h3>📝 No booking requests yet</h3>
+                            <p>You haven't made any room booking requests.</p>
+                            <button class="btn btn-primary" onclick="showSection('rooms')" style="margin-top: 20px;">
+                                🏠 Start Booking
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const approvedBooking = bookings.find(b => b.Status === 'Approved');
+                const pendingBookings = bookings.filter(b => b.Status === 'Pending');
+                const rejectedBookings = bookings.filter(b => b.Status === 'Rejected');
+                
+                let statusHTML = '';
+                
+                if (approvedBooking) {
+                    statusHTML += `
+                        <div class="status-section approved-section">
+                            <h3>🎉 Congratulations! You have a confirmed room</h3>
+                            <div class="booking-details">
+                                <p><strong>🏠 Block:</strong> ${approvedBooking.BlockName}</p>
+                                <p><strong>🚪 Room Number:</strong> ${approvedBooking.RoomNumber}</p>
+                                <p><strong>🏢 Floor:</strong> ${approvedBooking.FloorNumber}</p>
+                                <p><strong>🛏️ Room Type:</strong> ${approvedBooking.RoomType}</p>
+                                <p><strong>❄️ AC Type:</strong> ${approvedBooking.ACType}</p>
+                                <p><strong>📅 Booking Date:</strong> ${new Date(approvedBooking.BookingDate).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusHTML += `
+                        <div class="status-section pending-section">
+                            <h3>🏠 Room Booking Status</h3>
+                            <p>You don't have a confirmed room yet.</p>
+                        </div>
+                    `;
+                }
+                
+                if (pendingBookings.length > 0) {
+                    statusHTML += `
+                        <div class="status-section pending-section">
+                            <h3>⏳ Pending Requests (${pendingBookings.length})</h3>
+                            <p>These bookings are being processed...</p>
+                        </div>
+                    `;
+                }
+                
+                if (rejectedBookings.length > 0) {
+                    statusHTML += `
+                        <div class="status-section rejected-section">
+                            <h3>❌ Unsuccessful Attempts (${rejectedBookings.length})</h3>
+                            <p>These rooms were already occupied when you tried to book them.</p>
+                        </div>
+                    `;
+                }
+                
+                statusContent.innerHTML = statusHTML;
+                
+            } catch (error) {
+                alert('❌ Failed to load booking status');
+            }
+        }
+
+        // Initialize
+        const userType = localStorage.getItem('userType');
+        if (userType !== 'student') {
+            window.location.href = 'login.html';
+        }
+        
+        loadProfile();
+    </script>
+</body>
+</html>

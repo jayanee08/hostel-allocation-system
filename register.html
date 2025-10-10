@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Hostel System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2 class="form-title">Student Registration</h2>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerNumber">Register Number:</label>
+                <input type="text" id="registerNumber" name="registerNumber" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <input type="text" id="department" name="department" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Register</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="login.html" style="color: #6a11cb;">Already have an account? Login here</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                registerNumber: document.getElementById('registerNumber').value,
+                department: document.getElementById('department').value,
+                gender: document.getElementById('gender').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

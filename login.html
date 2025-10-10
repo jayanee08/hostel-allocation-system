@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hostel System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2 class="form-title">Login to Hostel System</h2>
+        
+        <div class="login-tabs">
+            <button class="tab-btn active" id="studentTab" onclick="switchTab('student')">
+                <span class="tab-icon">👨🎓</span>
+                <span>Student Login</span>
+            </button>
+            <button class="tab-btn" id="adminTab" onclick="switchTab('admin')">
+                <span class="tab-icon">👨💼</span>
+                <span>Admin Login</span>
+            </button>
+        </div>
+        
+        <div id="studentForm" class="login-form-section active">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #6a11cb;">Student Portal</h3>
+            <form id="studentLoginForm">
+                <div class="form-group">
+                    <label for="studentEmail">📧 Student Email:</label>
+                    <input type="email" id="studentEmail" name="email" placeholder="your.email@student.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentPassword">🔒 Password:</label>
+                    <input type="password" id="studentPassword" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login as Student</button>
+            </form>
+            
+            <div class="test-credentials">
+                <p><strong>Test Student Credentials:</strong></p>
+                <p>📧 Email: john@student.com</p>
+                <p>🔑 Password: password123</p>
+            </div>
+            
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="register.html" style="color: #6a11cb;">New student? Register here</a>
+            </p>
+        </div>
+        
+        <div id="adminForm" class="login-form-section">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #ff6b6b;">Admin Portal</h3>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminEmail">👨💼 Admin Email:</label>
+                    <input type="email" id="adminEmail" name="email" placeholder="admin@hostel.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword">🔐 Admin Password:</label>
+                    <input type="password" id="adminPassword" name="password" placeholder="Enter admin password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 20px;">Login as Admin</button>
+            </form>
+            
+            <div class="test-credentials">
+                <p><strong>Admin Credentials:</strong></p>
+                <p>📧 Email: admin@hostel.com</p>
+                <p>🔑 Password: Admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserType = 'student';
+        
+        function switchTab(type) {
+            currentUserType = type;
+            const studentTab = document.getElementById('studentTab');
+            const adminTab = document.getElementById('adminTab');
+            const studentForm = document.getElementById('studentForm');
+            const adminForm = document.getElementById('adminForm');
+            
+            if (type === 'student') {
+                studentTab.classList.add('active');
+                adminTab.classList.remove('active');
+                studentForm.classList.add('active');
+                adminForm.classList.remove('active');
+            } else {
+                adminTab.classList.add('active');
+                studentTab.classList.remove('active');
+                adminForm.classList.add('active');
+                studentForm.classList.remove('active');
+            }
+        }
+        
+        // Student login
+        document.getElementById('studentLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('studentEmail').value;
+            const password = document.getElementById('studentPassword').value;
+            
+            await handleLogin(email, password, 'student');
+        });
+        
+        // Admin login
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            await handleLogin(email, password, 'admin');
+        });
+        
+        async function handleLogin(email, password, userType) {
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        userType
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('userType', data.userType);
+                    
+                    if (data.userType === 'admin') {
+                        window.location.href = 'admin_dashboard.html';
+                    } else {
+                        window.location.href = 'student_dashboard.html';
+                    }
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Login failed. Please try again.');
+            }
+        }
+        
+        // Initialize
+        switchTab('student');
+    </script>
+</body>
+</html>

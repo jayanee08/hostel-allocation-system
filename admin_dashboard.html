@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hostel System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">🏢 Admin Panel</div>
+                <div class="nav-links">
+                    <span id="adminName">Admin</span>
+                    <a href="index.html">🚪 Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard" style="margin-top: 80px;">
+        <div class="dashboard-header">
+            <h1>🎯 Hostel Management Dashboard</h1>
+            <p>Complete control over rooms, bookings, and student management</p>
+        </div>
+
+        <div class="section-nav">
+            <button class="active" onclick="showSection('overview')">📊 Overview</button>
+            <button onclick="showSection('rooms')">🏠 Manage Rooms</button>
+            <button onclick="showSection('bookings')">📋 All Bookings</button>
+            <button onclick="showSection('students')">👥 Students</button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overviewSection" class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRooms">0</div>
+                    <h3>🏠 Total Rooms</h3>
+                    <p>All hostel rooms</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="availableRooms">0</div>
+                    <h3>✅ Available Rooms</h3>
+                    <p>Ready for booking</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="occupiedRooms">0</div>
+                    <h3>🔒 Occupied Rooms</h3>
+                    <p>Currently booked</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStudents">0</div>
+                    <h3>👨‍🎓 Total Students</h3>
+                    <p>Registered users</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBookings">0</div>
+                    <h3>📋 Total Bookings</h3>
+                    <p>All booking requests</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedBookings">0</div>
+                    <h3>✅ Approved</h3>
+                    <p>Successful bookings</p>
+                </div>
+            </div>
+
+            <div class="block-section">
+                <div class="block-header">🏢 Block Occupancy Overview</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="boysAvailable">0</div>
+                        <h3>👨 Boys Block Available</h3>
+                        <p>Boys Block A</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="boysOccupied">0</div>
+                        <h3>👨 Boys Block Occupied</h3>
+                        <p>Boys Block A</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="girlsAvailable">0</div>
+                        <h3>👩 Girls Block Available</h3>
+                        <p>Girls Block B</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="girlsOccupied">0</div>
+                        <h3>👩 Girls Block Occupied</h3>
+                        <p>Girls Block B</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Management Section -->
+        <div id="roomsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">🏠 Room Management</h2>
+            
+            <!-- Boys Block -->
+            <div class="block-section">
+                <div class="block-header">👨 Boys Block A - Room Management</div>
+                <table class="data-table" id="boysRoomsTable">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Floor</th>
+                            <th>Room No.</th>
+                            <th>Type</th>
+                            <th>AC</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Girls Block -->
+            <div class="block-section">
+                <div class="block-header">👩 Girls Block B - Room Management</div>
+                <table class="data-table" id="girlsRoomsTable">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Floor</th>
+                            <th>Room No.</th>
+                            <th>Type</th>
+                            <th>AC</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- All Bookings Section -->
+        <div id="bookingsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">📋 All Booking Records</h2>
+            
+            <div class="stats-grid" style="margin-bottom: 30px;">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <h3>⏳ Pending</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedCount">0</div>
+                    <h3>✅ Approved</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="rejectedCount">0</div>
+                    <h3>❌ Rejected</h3>
+                </div>
+            </div>
+
+            <table class="data-table" id="bookingsTable">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Student Name</th>
+                        <th>Register No.</th>
+                        <th>Block</th>
+                        <th>Room</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Students Section -->
+        <div id="studentsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">👥 Registered Students</h2>
+            
+            <table class="data-table" id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Register No.</th>
+                        <th>Department</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let allRooms = [];
+        let allBookings = [];
+        let allStudents = [];
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.section-nav button').forEach(b => b.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(section + 'Section').style.display = 'block';
+            event.target.classList.add('active');
+            
+            // Load section data
+            if (section === 'overview') {
+                loadOverview();
+            } else if (section === 'rooms') {
+                loadAllRooms();
+            } else if (section === 'bookings') {
+                loadAllBookings();
+            } else if (section === 'students') {
+                loadAllStudents();
+            }
+        }
+
+        async function loadOverview() {
+            try {
+                // Load all data for overview
+                await Promise.all([
+                    loadRoomsData(),
+                    loadBookingsData(),
+                    loadStudentsData()
+                ]);
+
+                // Calculate statistics
+                const totalRooms = allRooms.length;
+                const availableRooms = allRooms.filter(r => r.Availability === 'Available').length;
+                const occupiedRooms = allRooms.filter(r => r.Availability === 'Occupied').length;
+                const totalStudents = allStudents.length;
+                const totalBookings = allBookings.length;
+                const approvedBookings = allBookings.filter(b => b.Status === 'Approved').length;
+
+                // Boys block stats
+                const boysRooms = allRooms.filter(r => r.BlockName.includes('Boys'));
+                const boysAvailable = boysRooms.filter(r => r.Availability === 'Available').length;
+                const boysOccupied = boysRooms.filter(r => r.Availability === 'Occupied').length;
+
+                // Girls block stats
+                const girlsRooms = allRooms.filter(r => r.BlockName.includes('Girls'));
+                const girlsAvailable = girlsRooms.filter(r => r.Availability === 'Available').length;
+                const girlsOccupied = girlsRooms.filter(r => r.Availability === 'Occupied').length;
+
+                // Update UI
+                document.getElementById('totalRooms').textContent = totalRooms;
+                document.getElementById('availableRooms').textContent = availableRooms;
+                document.getElementById('occupiedRooms').textContent = occupiedRooms;
+                document.getElementById('totalStudents').textContent = totalStudents;
+                document.getElementById('totalBookings').textContent = totalBookings;
+                document.getElementById('approvedBookings').textContent = approvedBookings;
+                document.getElementById('boysAvailable').textContent = boysAvailable;
+                document.getElementById('boysOccupied').textContent = boysOccupied;
+                document.getElementById('girlsAvailable').textContent = girlsAvailable;
+                document.getElementById('girlsOccupied').textContent = girlsOccupied;
+
+            } catch (error) {
+                console.error('Failed to load overview:', error);
+            }
+        }
+
+        async function loadRoomsData() {
+            try {
+                const [maleResponse, femaleResponse] = await Promise.all([
+                    fetch('/api/rooms/Male'),
+                    fetch('/api/rooms/Female')
+                ]);
+                
+                const maleRooms = await maleResponse.json();
+                const femaleRooms = await femaleResponse.json();
+                
+                // Also get occupied rooms
+                const allRoomsResponse = await fetch('/api/all-rooms');
+                if (allRoomsResponse.ok) {
+                    allRooms = await allRoomsResponse.json();
+                } else {
+                    allRooms = [...maleRooms, ...femaleRooms];
+                }
+            } catch (error) {
+                console.error('Failed to load rooms:', error);
+            }
+        }
+
+        async function loadBookingsData() {
+            try {
+                const response = await fetch('/api/all-bookings');
+                if (response.ok) {
+                    allBookings = await response.json();
+                }
+            } catch (error) {
+                console.error('Failed to load bookings:', error);
+            }
+        }
+
+        async function loadStudentsData() {
+            try {
+                const response = await fetch('/api/all-students');
+                if (response.ok) {
+                    allStudents = await response.json();
+                }
+            } catch (error) {
+                console.error('Failed to load students:', error);
+            }
+        }
+
+        async function loadAllRooms() {
+            await loadRoomsData();
+            
+            const boysRooms = allRooms.filter(r => r.BlockName.includes('Boys'));
+            const girlsRooms = allRooms.filter(r => r.BlockName.includes('Girls'));
+            
+            populateRoomsTable('boysRoomsTable', boysRooms);
+            populateRoomsTable('girlsRoomsTable', girlsRooms);
+        }
+
+        function populateRoomsTable(tableId, rooms) {
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            tbody.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const row = document.createElement('tr');
+                const statusClass = room.Availability === 'Available' ? 'approved' : 'rejected';
+                
+                row.innerHTML = `
+                    <td>${room.RoomID}</td>
+                    <td>${room.FloorNumber}</td>
+                    <td>${room.RoomNumber}</td>
+                    <td>${room.RoomType}</td>
+                    <td>${room.ACType}</td>
+                    <td><span class="status ${statusClass}">${room.Availability}</span></td>
+                    <td>
+                        <button class="action-btn btn-toggle" onclick="toggleRoomStatus(${room.RoomID}, '${room.Availability}')">
+                            ${room.Availability === 'Available' ? '🔒 Mark Occupied' : '🔓 Mark Available'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function toggleRoomStatus(roomId, currentStatus) {
+            const newStatus = currentStatus === 'Available' ? 'Occupied' : 'Available';
+            
+            try {
+                const response = await fetch('/api/toggle-room-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        roomId: roomId,
+                        newStatus: newStatus
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`✅ Room status updated to ${newStatus}`);
+                    loadAllRooms(); // Reload rooms
+                    loadOverview(); // Update overview stats
+                } else {
+                    alert('❌ Failed to update room status');
+                }
+            } catch (error) {
+                alert('❌ Error updating room status');
+            }
+        }
+
+        async function loadAllBookings() {
+            await loadBookingsData();
+            await loadStudentsData();
+            
+            const tbody = document.querySelector('#bookingsTable tbody');
+            tbody.innerHTML = '';
+            
+            // Update booking counts
+            const pending = allBookings.filter(b => b.Status === 'Pending').length;
+            const approved = allBookings.filter(b => b.Status === 'Approved').length;
+            const rejected = allBookings.filter(b => b.Status === 'Rejected').length;
+            
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            
+            allBookings.forEach(booking => {
+                const student = allStudents.find(s => s.UserID === booking.UserID);
+                const room = allRooms.find(r => r.RoomID === booking.RoomID);
+                
+                const row = document.createElement('tr');
+                const statusClass = booking.Status.toLowerCase();
+                
+                row.innerHTML = `
+                    <td>${booking.BookingID}</td>
+                    <td>${student ? student.Name : 'Unknown'}</td>
+                    <td>${student ? student.RegisterNumber : 'N/A'}</td>
+                    <td>${room ? room.BlockName : 'N/A'}</td>
+                    <td>${room ? room.RoomNumber : 'N/A'}</td>
+                    <td><span class="status ${statusClass}">${booking.Status}</span></td>
+                    <td>${new Date(booking.BookingDate).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="viewBookingDetails(${booking.BookingID})">
+                            👁️ View
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function loadAllStudents() {
+            await loadStudentsData();
+            
+            const tbody = document.querySelector('#studentsTable tbody');
+            tbody.innerHTML = '';
+            
+            allStudents.forEach(student => {
+                const hasBooking = allBookings.some(b => b.UserID === student.UserID && b.Status === 'Approved');
+                const status = hasBooking ? 'Has Room' : 'No Room';
+                const statusClass = hasBooking ? 'approved' : 'pending';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.UserID}</td>
+                    <td>${student.Name}</td>
+                    <td>${student.RegisterNumber}</td>
+                    <td>${student.Department}</td>
+                    <td>${student.Gender}</td>
+                    <td>${student.Email}</td>
+                    <td><span class="status ${statusClass}">${status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function viewBookingDetails(bookingId) {
+            const booking = allBookings.find(b => b.BookingID === bookingId);
+            const student = allStudents.find(s => s.UserID === booking.UserID);
+            const room = allRooms.find(r => r.RoomID === booking.RoomID);
+            
+            alert(`📋 Booking Details:
+            
+Booking ID: ${booking.BookingID}
+Student: ${student ? student.Name : 'Unknown'}
+Register No: ${student ? student.RegisterNumber : 'N/A'}
+Room: ${room ? room.BlockName + ' - ' + room.RoomNumber : 'N/A'}
+Status: ${booking.Status}
+Date: ${new Date(booking.BookingDate).toLocaleString()}`);
+        }
+
+        // Initialize
+        const userType = localStorage.getItem('userType');
+        if (userType !== 'admin') {
+            window.location.href = 'login.html';
+        }
+        
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('adminName').textContent = user.Email;
+        }
+        
+        loadOverview();
+    </script>
+</body>
+</html>
