@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const sql = require('mssql');
 const bodyParser = require('body-parser');
@@ -5,17 +6,13 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const path = require('path');
 
-// const genAIService = require('./genai-service');
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
-// Azure SQL Database configuration
 const config = {
     user: 'hostel_admin',
     password: 'Nikhil&2005',
@@ -32,7 +29,6 @@ const config = {
     }
 };
 
-// Database connection pool
 let pool;
 
 async function connectDB() {
@@ -41,20 +37,18 @@ async function connectDB() {
         console.log('✅ Connected to Azure SQL Database');
         return pool;
     } catch (err) {
-        console.error('❌ Database connection failed:', err);
-        throw err;
+        console.error('❌ Database connection failed:', err.message);
+        pool = null;
+        return null;
     }
 }
 
-// Initialize database connection
-connectDB();
+connectDB().catch(() => {});
 
-// Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Student Registration
 app.post('/api/register', async (req, res) => {
     try {
         const { name, registerNumber, department, gender, email, password } = req.body;
@@ -78,7 +72,7 @@ app.post('/api/register', async (req, res) => {
         res.json({ success: true, message: 'Registration successful' });
     } catch (error) {
         console.error('Registration error:', error);
-        if (error.number === 2627) { // Unique constraint violation
+        if (error.number === 2627) {
             res.status(400).json({ success: false, message: 'Email or Register Number already exists' });
         } else {
             res.status(500).json({ success: false, message: 'Registration failed: ' + error.message });
@@ -86,7 +80,6 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// Login
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password, userType } = req.body;
@@ -129,7 +122,6 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Get available rooms
 app.get('/api/rooms/:gender', async (req, res) => {
     try {
         const { gender } = req.params;
@@ -147,7 +139,6 @@ app.get('/api/rooms/:gender', async (req, res) => {
     }
 });
 
-// Book room
 app.post('/api/book', async (req, res) => {
     try {
         const { userId, roomId } = req.body;
@@ -156,7 +147,6 @@ app.post('/api/book', async (req, res) => {
             return res.status(400).json({ success: false, message: 'User ID and Room ID are required' });
         }
         
-        // Check room availability
         const roomCheck = await pool.request()
             .input('roomId', sql.Int, roomId)
             .query('SELECT Availability FROM Rooms WHERE RoomID = @roomId');
@@ -166,7 +156,6 @@ app.post('/api/book', async (req, res) => {
         }
         
         if (roomCheck.recordset[0].Availability === 'Available') {
-            // Auto-approve and mark room as occupied
             await pool.request()
                 .input('userId', sql.Int, userId)
                 .input('roomId', sql.Int, roomId)
@@ -179,7 +168,6 @@ app.post('/api/book', async (req, res) => {
             
             res.json({ success: true, status: 'Approved', message: 'Room booked successfully' });
         } else {
-            // Auto-reject
             await pool.request()
                 .input('userId', sql.Int, userId)
                 .input('roomId', sql.Int, roomId)
@@ -194,7 +182,6 @@ app.post('/api/book', async (req, res) => {
     }
 });
 
-// Get user bookings
 app.get('/api/bookings/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -214,7 +201,6 @@ app.get('/api/bookings/:userId', async (req, res) => {
     }
 });
 
-// Get all rooms (for admin)
 app.get('/api/all-rooms', async (req, res) => {
     try {
         const request = pool.request();
@@ -227,7 +213,6 @@ app.get('/api/all-rooms', async (req, res) => {
     }
 });
 
-// Get all bookings (for admin)
 app.get('/api/all-bookings', async (req, res) => {
     try {
         const request = pool.request();
@@ -247,7 +232,6 @@ app.get('/api/all-bookings', async (req, res) => {
     }
 });
 
-// Get all students (for admin)
 app.get('/api/all-students', async (req, res) => {
     try {
         const request = pool.request();
@@ -260,7 +244,6 @@ app.get('/api/all-students', async (req, res) => {
     }
 });
 
-// Toggle room status (for admin)
 app.post('/api/toggle-room-status', async (req, res) => {
     try {
         const { roomId, newStatus } = req.body;
@@ -282,21 +265,9 @@ app.post('/api/toggle-room-status', async (req, res) => {
     }
 });
 
-// GenAI Routes - Temporarily disabled for deployment
-/*
-app.post('/api/smart-recommendations', async (req, res) => {
-    res.json({ success: false, message: 'GenAI features coming soon' });
-});
-
-app.post('/api/chatbot', async (req, res) => {
-    res.json({ success: false, message: 'Chatbot coming soon' });
-});
-*/
-
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log('📱 Open your browser and go to: http://localhost:3002');
+    console.log(`📱 Open your browser and go to: http://localhost:${PORT}`);
     console.log('🔐 Admin Login: admin@hostel.com / Admin123');
-    console.log('👨🎓 Student Login: john@student.com / password123');
     console.log('🏠 Hostel Management System Ready');
 });
