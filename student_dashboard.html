@@ -117,7 +117,35 @@
         </div>
     </div>
 
-
+    <div id="chatbot" class="chatbot">
+        <div class="chatbot-header" onclick="toggleChat()">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">🤖</span>
+                <div>
+                    <div style="font-weight: 700; font-size: 1rem;">Alex</div>
+                    <div style="font-size: 0.75rem; opacity: 0.9;">Hostel Assistant</div>
+                </div>
+            </div>
+            <span id="chatToggle" style="font-size: 1.2rem;">💬</span>
+        </div>
+        <div id="chatWindow" class="chat-window">
+            <div id="chatMessages" class="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        👋 Hi! I'm <strong>Alex</strong>, your hostel assistant.<br><br>
+                        🏠 Rooms • 📋 Booking • 🔐 Login • ℹ️ Info<br><br>
+                        Ask me anything!
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Ask me anything about the hostel..." onkeypress="handleChatKeyPress(event)">
+                <button onclick="sendMessage()" id="sendBtn">
+                    <span>Send</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let currentUser = null;
@@ -430,6 +458,86 @@
         const userType = localStorage.getItem('userType');
         if (userType !== 'student') {
             window.location.href = 'login.html';
+        }
+        
+        let chatOpen = false;
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            const chatToggle = document.getElementById('chatToggle');
+            
+            chatOpen = !chatOpen;
+            chatWindow.style.display = chatOpen ? 'flex' : 'none';
+            chatToggle.textContent = chatOpen ? '✖️' : '💬';
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            const typingId = addMessage('Alex is thinking...', 'bot', true);
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message, 
+                        userContext: currentUser 
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById(typingId).remove();
+                
+                if (data.success) {
+                    addMessage(data.response, 'bot');
+                } else {
+                    addMessage('Sorry, I\'m having trouble right now. Please try again.', 'bot');
+                }
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                addMessage('Sorry, I\'m having trouble connecting. Please try again.', 'bot');
+            }
+        }
+
+        function addMessage(content, sender, isTyping = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            const messageId = 'msg-' + Date.now();
+            
+            messageDiv.id = messageId;
+            messageDiv.className = `message ${sender}-message${isTyping ? ' typing' : ''}`;
+            
+            let formattedContent = content;
+            if (sender === 'bot' && !isTyping) {
+                formattedContent = content
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/•/g, '<span style="color: #4f46e5;">•</span>');
+            }
+            
+            messageDiv.innerHTML = `<div class="message-content">${formattedContent}</div>`;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTo({
+                top: messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+            
+            return messageId;
         }
         
         loadProfile();
