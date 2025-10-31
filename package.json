@@ -9,6 +9,10 @@
     "test": "echo \"No tests specified\" && exit 0",
     "build": "echo \"Build completed\""
   },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
+  },
   "dependencies": {
     "@azure/ai-text-analytics": "^5.1.0",
     "@azure/core-auth": "^1.10.1",

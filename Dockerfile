@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 3001
+
+ENV PORT=3001
 
 CMD ["node", "server.js"]
