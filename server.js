@@ -10,7 +10,7 @@ const ChatbotService = require('./chatbot-service');
 
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -57,6 +57,9 @@ let chatbotService;
 setTimeout(() => {
     if (pool) {
         chatbotService = new ChatbotService(pool);
+        console.log('✅ Alex chatbot service initialized');
+    } else {
+        console.log('❌ Chatbot service not initialized - no database connection');
     }
 }, 2000);
 
@@ -74,6 +77,23 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
         
+        // Check if email or register number already exists
+        const checkRequest = pool.request();
+        const existingUser = await checkRequest
+            .input('email', sql.NVarChar, email)
+            .input('registerNumber', sql.NVarChar, registerNumber)
+            .query('SELECT Email, RegisterNumber FROM Users WHERE Email = @email OR RegisterNumber = @registerNumber');
+        
+        if (existingUser.recordset.length > 0) {
+            const existing = existingUser.recordset[0];
+            if (existing.Email === email) {
+                return res.status(400).json({ success: false, message: 'Email already exists' });
+            }
+            if (existing.RegisterNumber === registerNumber) {
+                return res.status(400).json({ success: false, message: 'Register Number already exists' });
+            }
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         
         const request = pool.request();
@@ -89,11 +109,7 @@ app.post('/api/register', async (req, res) => {
         res.json({ success: true, message: 'Registration successful' });
     } catch (error) {
         console.error('Registration error:', error);
-        if (error.number === 2627) { // Unique constraint violation
-            res.status(400).json({ success: false, message: 'Email or Register Number already exists' });
-        } else {
-            res.status(500).json({ success: false, message: 'Registration failed: ' + error.message });
-        }
+        res.status(500).json({ success: false, message: 'Registration failed: ' + error.message });
     }
 });
 
@@ -165,6 +181,18 @@ app.post('/api/book', async (req, res) => {
         
         if (!userId || !roomId) {
             return res.status(400).json({ success: false, message: 'User ID and Room ID are required' });
+        }
+        
+        // Check if user already has an approved booking
+        const existingBooking = await pool.request()
+            .input('userId', sql.Int, userId)
+            .query('SELECT * FROM Bookings WHERE UserID = @userId AND Status = \'Approved\'');
+        
+        if (existingBooking.recordset.length > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'You have already booked a room. Contact admin for assistance.' 
+            });
         }
         
         // Check room availability
@@ -303,14 +331,18 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Message is required' });
         }
         
+        console.log('Received message:', message);
+        
         if (!chatbotService) {
+            console.log('Chatbot service not available');
             return res.json({ 
                 success: true, 
-                response: "Hi! I'm Alex, your hostel assistant. I can help with room booking, login issues, and general information. What would you like to know?" 
+                response: "Hi! I'm Alex, your hostel assistant. The AI service is initializing. I can help with room booking, login issues, and general information. What would you like to know?" 
             });
         }
         
         const response = await chatbotService.processMessage(message.trim(), userContext);
+        console.log('Sending response:', response);
         res.json({ success: true, response });
         
     } catch (error) {
@@ -322,10 +354,37 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// Debug endpoint to check database contents
+app.get('/api/debug/users', async (req, res) => {
+    try {
+        const request = pool.request();
+        const result = await request.query('SELECT Email, RegisterNumber, Name FROM Users');
+        res.json({ success: true, users: result.recordset });
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
+});
+
+// Test API endpoint
+app.get('/api/test-ai', async (req, res) => {
+    try {
+        if (!chatbotService) {
+            return res.json({ success: false, message: 'Chatbot service not initialized' });
+        }
+        
+        const testResponse = await chatbotService.processMessage('how many rooms are available in boys block');
+        res.json({ success: true, response: testResponse, service: 'New Alex Chatbot' });
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📱 Open your browser and go to: http://localhost:${PORT}`);
     console.log('🔐 Admin Login: admin@hostel.com / Admin123');
-    console.log('🤖 AI Chatbot: OpenAI GPT-OSS-20B');
+    console.log('🤖 Alex Chatbot: Direct Database Queries');
+    console.log('🧠 Alex Assistant: Smart Question Detection');
+    console.log('🔗 Test Alex: http://localhost:${PORT}/api/test-ai');
     console.log('🏠 Hostel Management System Ready');
 });
