@@ -308,6 +308,22 @@ app.post('/api/toggle-room-status', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Room ID and new status are required' });
         }
         
+        // If admin is making an occupied room available, reject the previous booking
+        if (newStatus === 'Available') {
+            // Find the current approved booking for this room
+            const currentBooking = await pool.request()
+                .input('roomId', sql.Int, roomId)
+                .query('SELECT BookingID, UserID FROM Bookings WHERE RoomID = @roomId AND Status = \'Approved\'');
+            
+            if (currentBooking.recordset.length > 0) {
+                // Update the booking status to rejected with admin message
+                await pool.request()
+                    .input('bookingId', sql.Int, currentBooking.recordset[0].BookingID)
+                    .query('UPDATE Bookings SET Status = \'Rejected\', AdminMessage = \'Your room booking is rejected by the admin and made as Available. Book your room again.\' WHERE BookingID = @bookingId');
+            }
+        }
+        
+        // Update room status
         const request = pool.request();
         await request
             .input('roomId', sql.Int, roomId)
