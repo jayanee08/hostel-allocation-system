@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const ChatbotService = require('./chatbot-service');
 
 
 
@@ -19,10 +18,10 @@ app.use(express.static(path.join(__dirname)));
 
 // Azure SQL Database configuration
 const config = {
-    user: 'hostel_admin',
-    password: 'Nikhil&2005',
-    server: 'hostel-server-2024.database.windows.net',
-    database: 'hostel_management',
+    user: process.env.DB_USER || 'hostel_admin',
+    password: process.env.DB_PASSWORD || 'Nikhil&2005',
+    server: process.env.DB_SERVER || 'hostel-server-2024.database.windows.net',
+    database: process.env.DB_NAME || 'hostel_management',
     options: {
         encrypt: true,
         trustServerCertificate: false
@@ -53,15 +52,8 @@ async function connectDB() {
 // Initialize database connection
 connectDB().catch(() => {});
 
-let chatbotService;
-setTimeout(() => {
-    if (pool) {
-        chatbotService = new ChatbotService(pool);
-        console.log('✅ Alex chatbot service initialized');
-    } else {
-        console.log('❌ Chatbot service not initialized - no database connection');
-    }
-}, 2000);
+// Chatbot service disabled for deployment
+let chatbotService = null;
 
 // Routes
 app.get('/', (req, res) => {
@@ -341,24 +333,29 @@ app.post('/api/toggle-room-status', async (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message, userContext } = req.body;
+        const { message } = req.body;
         
         if (!message || message.trim().length === 0) {
             return res.status(400).json({ success: false, message: 'Message is required' });
         }
         
-        console.log('Received message:', message);
+        // Simple chatbot responses
+        const responses = {
+            'hello': 'Hi! I\'m Alex, your hostel assistant. How can I help you today?',
+            'rooms': 'You can view available rooms in your dashboard after logging in.',
+            'booking': 'To book a room, go to your student dashboard and select an available room.',
+            'login': 'Use your registered email and password to login. Contact admin if you forgot your password.',
+            'default': 'I\'m here to help! You can ask about room booking, login issues, or general information.'
+        };
         
-        if (!chatbotService) {
-            console.log('Chatbot service not available');
-            return res.json({ 
-                success: true, 
-                response: "Hi! I'm Alex, your hostel assistant. The AI service is initializing. I can help with room booking, login issues, and general information. What would you like to know?" 
-            });
-        }
+        const msg = message.toLowerCase();
+        let response = responses.default;
         
-        const response = await chatbotService.processMessage(message.trim(), userContext);
-        console.log('Sending response:', response);
+        if (msg.includes('hello') || msg.includes('hi')) response = responses.hello;
+        else if (msg.includes('room')) response = responses.rooms;
+        else if (msg.includes('book')) response = responses.booking;
+        else if (msg.includes('login')) response = responses.login;
+        
         res.json({ success: true, response });
         
     } catch (error) {
@@ -384,12 +381,7 @@ app.get('/api/debug/users', async (req, res) => {
 // Test API endpoint
 app.get('/api/test-ai', async (req, res) => {
     try {
-        if (!chatbotService) {
-            return res.json({ success: false, message: 'Chatbot service not initialized' });
-        }
-        
-        const testResponse = await chatbotService.processMessage('how many rooms are available in boys block');
-        res.json({ success: true, response: testResponse, service: 'New Alex Chatbot' });
+        res.json({ success: true, response: 'Chatbot service is running!', service: 'Simple Chatbot' });
     } catch (error) {
         res.json({ success: false, error: error.message });
     }
