@@ -16,9 +16,15 @@ spec:
     spec:
       containers:
       - name: hostel-app
+<<<<<<< HEAD
         image: hostel-management:latest
         ports:
         - containerPort: 8080
+=======
+        image: hostelregistry2024.azurecr.io/hostel-app:latest
+        ports:
+        - containerPort: 3001
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
         env:
         - name: DB_SERVER
           valueFrom:
@@ -68,5 +74,9 @@ spec:
   ports:
     - protocol: TCP
       port: 80
+<<<<<<< HEAD
       targetPort: 8080
+=======
+      targetPort: 3001
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
   type: LoadBalancer

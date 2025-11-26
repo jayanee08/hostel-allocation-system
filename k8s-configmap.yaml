@@ -5,7 +5,11 @@ metadata:
 data:
   DB_SERVER: "hostel-server-2024.database.windows.net"
   DB_NAME: "hostel_management"
+<<<<<<< HEAD
   PORT: "8080"
+=======
+  PORT: "3001"
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
 ---
 apiVersion: v1
 kind: Secret

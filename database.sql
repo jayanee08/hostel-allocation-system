@@ -26,7 +26,8 @@ CREATE TABLE Bookings (
     UserID INT FOREIGN KEY REFERENCES Users(UserID),
     RoomID INT FOREIGN KEY REFERENCES Rooms(RoomID),
     Status NVARCHAR(20) DEFAULT 'Pending',
-    BookingDate DATETIME DEFAULT GETDATE()
+    BookingDate DATETIME DEFAULT GETDATE(),
+    AdminMessage NVARCHAR(500) NULL
 );
 
 

@@ -1007,6 +1007,7 @@
                 </select>
             </div>
             
+<<<<<<< HEAD
             <div class="stats-grid" style="margin-bottom: 30px; grid-template-columns: repeat(3, 1fr); max-width: 600px; margin-left: auto; margin-right: auto;">
                 <div class="booking-stat-card">
                     <div class="booking-stat-number" id="pendingCount">0</div>
@@ -1017,6 +1018,14 @@
                     <h3 class="booking-stat-label">Approved</h3>
                 </div>
                 <div class="booking-stat-card">
+=======
+            <div class="stats-grid" style="margin-bottom: 30px; grid-template-columns: repeat(2, 1fr); max-width: 400px; margin-left: auto; margin-right: auto;">
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="approvedCount">0</div>
+                    <h3 class="booking-stat-label">Approved</h3>
+                </div>
+                <div class="booking-stat-card">
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
                     <div class="booking-stat-number" id="rejectedCount">0</div>
                     <h3 class="booking-stat-label">Rejected</h3>
                 </div>
@@ -1433,11 +1442,13 @@
             await loadBookingsData();
             await loadStudentsData();
             
+<<<<<<< HEAD
             const pending = allBookings.filter(b => b.Status === 'Pending').length;
+=======
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
             const approved = allBookings.filter(b => b.Status === 'Approved').length;
             const rejected = allBookings.filter(b => b.Status === 'Rejected').length;
             
-            document.getElementById('pendingCount').textContent = pending;
             document.getElementById('approvedCount').textContent = approved;
             document.getElementById('rejectedCount').textContent = rejected;
             
