@@ -1,0 +1,8 @@
+resource_group_name = "hostel-rg"
+location           = "East US"
+sql_server_name    = "hostel-server-2024"
+database_name      = "hostel_management"
+sql_admin_username = "hostel_admin"
+sql_admin_password = "YourSecurePassword123!"
+app_name          = "hostel-app-jayanee"
+openai_api_key    = "your-openai-api-key-here"

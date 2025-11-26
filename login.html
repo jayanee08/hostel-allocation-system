@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hostel System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="login-styles.css">
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">Back</button>
+    <div class="container">
+        <input type="checkbox" id="signup_toggle">
+        <form class="form">
+            <div class="form_front">
+                <div class="form_details">Login</div>
+                <div class="login-tabs">
+                    <button type="button" class="tab-btn active" onclick="switchTab('student')">
+                        Student
+                    </button>
+                    <button type="button" class="tab-btn" onclick="switchTab('admin')">
+                        Admin
+                    </button>
+                </div>
+                <input placeholder="Username" class="input" type="text" id="loginEmail">
+                <input placeholder="Password" class="input" type="password" id="loginPassword">
+                <button class="btn" type="button" onclick="handleLogin()">Login</button>
+                <span class="switch">Don't have an account?
+                    <label class="signup_tog" for="signup_toggle">
+                        Sign Up
+                    </label>
+                </span>
+                <!-- <div class="test-credentials">
+                    <p><strong>Student:</strong> Register first or use existing account</p>
+                    <p><strong>Admin:</strong> admin@hostel.com / Admin123</p>
+                </div> -->
+            </div>
+            <div class="form_back">
+                <div class="form_details">SignUp</div>
+                <input placeholder="Full Name" class="input" type="text" id="signupName" required>
+                <input placeholder="Register Number (9 digits)" class="input" type="text" id="signupRegister" maxlength="9" pattern="[0-9]{9}" title="Register number must be exactly 9 digits" required>
+                <select class="input" id="signupDepartment" required>
+                    <option value="">Select Department</option>
+                    <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Computer Science and Business Systems">Computer Science and Business Systems</option>
+                    <option value="Computer Science and Design">Computer Science and Design</option>
+                    <option value="Artificial Intelligence and Machine Learning">Artificial Intelligence and Machine Learning</option>
+                    <option value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</option>
+                </select>
+                <select class="input" id="signupGender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <input placeholder="Email (e.g., 220701120@rajalakshmi.edu.in)" class="input" type="email" id="signupEmail" pattern="[0-9]+@rajalakshmi\.edu\.in" title="Email must be in format: numbers@rajalakshmi.edu.in" required>
+                <div style="position: relative;">
+                    <input placeholder="Password (min 6 chars, mixed case, numbers, symbols)" class="input" type="password" id="signupPassword" minlength="6" title="Password must be at least 6 characters with uppercase, lowercase, numbers and special characters" required>
+                    <div id="passwordStrength" class="password-strength-side"></div>
+                </div>
+                <button class="btn" type="button" onclick="handleSignup()">Signup</button>
+                <span class="switch">Already have an account?
+                    <label class="signup_tog" for="signup_toggle">
+                        Sign In
+                    </label>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentUserType = 'student';
+        
+        function switchTab(userType) {
+            currentUserType = userType;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+        
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        userType: currentUserType
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('userType', data.userType);
+                    
+                    if (data.userType === 'admin') {
+                        window.location.href = 'admin_dashboard.html';
+                    } else {
+                        window.location.href = 'student_dashboard.html';
+                    }
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Login failed. Please try again.');
+            }
+        }
+        
+        // Real-time validation functions
+        function validateRegisterNumber(registerNumber) {
+            const regex = /^[0-9]{9}$/;
+            return regex.test(registerNumber);
+        }
+        
+        function validateEmail(email) {
+            const regex = /^[0-9]+@rajalakshmi\.edu\.in$/;
+            return regex.test(email);
+        }
+        
+        function validatePassword(password) {
+            const minLength = password.length >= 6;
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            return {
+                valid: minLength && hasUpper && hasLower && hasNumber && hasSpecial,
+                minLength,
+                hasUpper,
+                hasLower,
+                hasNumber,
+                hasSpecial
+            };
+        }
+        
+        function updatePasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.innerHTML = '';
+                strengthDiv.classList.remove('show');
+                return;
+            }
+            
+            const validation = validatePassword(password);
+            let strengthText = '';
+            
+            strengthText += `<div style="color: ${validation.minLength ? 'green' : 'red'}">✓ At least 6 characters</div>`;
+            strengthText += `<div style="color: ${validation.hasUpper ? 'green' : 'red'}">✓ Uppercase letter</div>`;
+            strengthText += `<div style="color: ${validation.hasLower ? 'green' : 'red'}">✓ Lowercase letter</div>`;
+            strengthText += `<div style="color: ${validation.hasNumber ? 'green' : 'red'}">✓ Number</div>`;
+            strengthText += `<div style="color: ${validation.hasSpecial ? 'green' : 'red'}">✓ Special character</div>`;
+            
+            strengthDiv.innerHTML = strengthText;
+            strengthDiv.classList.add('show');
+        }
+        
+        // Add event listeners for real-time validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerInput = document.getElementById('signupRegister');
+            const emailInput = document.getElementById('signupEmail');
+            const passwordInput = document.getElementById('signupPassword');
+            
+            registerInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').substring(0, 9);
+                this.style.borderColor = '';
+            });
+            
+            emailInput.addEventListener('input', function() {
+                this.style.borderColor = '';
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                this.style.borderColor = '';
+                updatePasswordStrength();
+            });
+            
+            registerInput.addEventListener('blur', function() {
+                if (this.value && !validateRegisterNumber(this.value)) {
+                    this.style.borderColor = '#ff6b6b';
+                    this.style.transition = 'border-color 0.3s ease';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+            
+            emailInput.addEventListener('blur', function() {
+                if (this.value && !validateEmail(this.value)) {
+                    this.style.borderColor = '#ff6b6b';
+                    this.style.transition = 'border-color 0.3s ease';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+            
+            passwordInput.addEventListener('blur', function() {
+                if (this.value && !validatePassword(this.value).valid) {
+                    this.style.borderColor = '#ff6b6b';
+                    this.style.transition = 'border-color 0.3s ease';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+            
+            passwordInput.addEventListener('input', updatePasswordStrength);
+        });
+        
+        async function handleSignup() {
+            const name = document.getElementById('signupName').value.trim();
+            const registerNumber = document.getElementById('signupRegister').value.trim();
+            const department = document.getElementById('signupDepartment').value;
+            const gender = document.getElementById('signupGender').value;
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            
+            // Basic field validation
+            if (!name || !registerNumber || !department || !gender || !email || !password) {
+                alert('❌ Please fill in all fields');
+                return;
+            }
+            
+            // Register number validation
+            if (!validateRegisterNumber(registerNumber)) {
+                alert('❌ Register number must be exactly 9 digits');
+                return;
+            }
+            
+            // Email validation
+            if (!validateEmail(email)) {
+                alert('❌ Email must be in format: numbers@rajalakshmi.edu.in');
+                return;
+            }
+            
+            // Password validation
+            const passwordValidation = validatePassword(password);
+            if (!passwordValidation.valid) {
+                alert('❌ Password must be at least 6 characters and contain uppercase, lowercase, numbers, and special characters');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        registerNumber,
+                        department,
+                        gender,
+                        email,
+                        password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Registration successful! Please login.');
+                    document.getElementById('signup_toggle').checked = false;
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Registration failed. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

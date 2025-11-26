@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hostel System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .nav {
+            background: #000000;
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #333333;
+        }
+        
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            position: relative;
+        }
+        
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(128, 128, 128, 0.5);
+            object-fit: cover;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .dashboard {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.2rem;
+            opacity: 0.7;
+            color: #ffffff;
+        }
+        
+        .section-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .section-nav button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #222222;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .section-nav button.active {
+            background: #ffffff;
+            color: #000000;
+        }
+        
+        .section-nav button:hover {
+            background: #333333;
+        }
+        
+        .section-nav button.active:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            padding: 1rem;
+            background-color: #1a1a1a;
+            box-shadow: -10px -10px 20px #333333, 10px 10px 20px #000000, inset -10px -10px 20px #0d0d0d;
+            max-width: 320px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .title span {
+            position: relative;
+            padding: 0.5rem;
+            background-color: #ffffff;
+            box-shadow: -2px -2px 4px #333333, 2px 2px 4px #000000;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 9999px;
+        }
+        
+        .title span svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000000;
+            height: 1rem;
+        }
+        
+        .title-text {
+            margin-left: 0.5rem;
+            color: #ffffff;
+            font-size: 18px;
+        }
+        
+        .percent {
+            margin-left: 0.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .data {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        
+        .data p {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+            text-align: left;
+        }
+        
+        .data .range {
+            position: relative;
+            background-color: #333333;
+            box-shadow: -2px -2px 4px #555555, 2px 2px 4px #000000;
+            width: 100%;
+            height: 0.5rem;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        
+        .data .range .fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #ffffff;
+            height: 100%;
+            border-radius: 0.25rem;
+            transition: width 0.3s ease;
+            z-index: 1;
+        }
+        
+        .card .stat-card {
+            background: #222222;
+            border-radius: 10px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid #444444;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+        
+        .card .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        
+        .card .stat-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            color: #ffffff;
+            line-height: 1;
+        }
+        
+        .booking-stat-card {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 1px solid #333333;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: -10px -10px 20px #333333, 10px 10px 20px #000000, inset -10px -10px 20px #0d0d0d;
+        }
+        
+        .booking-stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .booking-stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        
+        .booking-stat-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: #ffffff;
+            line-height: 1;
+        }
+        
+        .nav-sections {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-section-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: #222222;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .nav-section-btn.active {
+            background: #ffffff;
+            color: #000000;
+        }
+        
+        .nav-section-btn:hover {
+            background: #333333;
+        }
+        
+        .nav-section-btn.active:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #111111;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .data-table th {
+            background: #000000;
+            font-weight: 600;
+            color: #ffffff;
+            border: 1px solid rgba(128, 128, 128, 0.5);
+        }
+        
+        .data-table tr:hover {
+            background: #222222;
+        }
+        
+        .status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .status.approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .status.pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .status.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-toggle {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .btn-edit:hover {
+            background: rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2);
+        }
+        
+        .btn-toggle:hover {
+            background: rgba(251, 191, 36, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.2);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .block-section {
+            margin: 30px 0;
+        }
+        
+        .block-header {
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            border: 2px solid rgba(128, 128, 128, 0.5);
+            border-radius: 25px;
+            display: inline-block;
+            background: transparent;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section {
+            display: block;
+        }
+        
+        .Btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 35px;
+            height: 35px;
+            border: 2px solid rgba(128, 128, 128, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition-duration: 0.3s;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+            background-color: black;
+        }
+        
+        .sign {
+            width: 100%;
+            transition-duration: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sign svg {
+            width: 12px;
+        }
+        
+        .sign svg path {
+            fill: white;
+        }
+        
+        .text {
+            position: absolute;
+            right: 0%;
+            width: 0%;
+            opacity: 0;
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition-duration: 0.3s;
+        }
+        
+        .Btn:hover {
+            background-color: black;
+            border: 2px solid rgba(128, 128, 128, 0.5);
+            width: 110px;
+            border-radius: 30px;
+            transition-duration: 0.3s;
+        }
+        
+        .Btn:hover .sign {
+            width: 30%;
+            transition-duration: 0.3s;
+            padding-left: 20px;
+        }
+        
+        .Btn:hover .sign svg path {
+            fill: white;
+        }
+        
+        .Btn:hover .text {
+            opacity: 1;
+            width: 70%;
+            transition-duration: 0.3s;
+            padding-right: 10px;
+            color: white;
+        }
+        
+        .Btn:active {
+            transform: translate(2px, 2px);
+        }
+        
+        .search-filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            padding: 10px 15px;
+            border: 1px solid #333333;
+            border-radius: 25px;
+            background: #222222;
+            color: white;
+            font-size: 1rem;
+            width: 300px;
+            outline: none;
+        }
+        
+        .search-input:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            background-color: #333333;
+        }
+        
+        .search-input:hover {
+            border-color: #555555;
+            background-color: #333333;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            padding-right: 35px;
+            border: 1px solid #333333;
+            border-radius: 25px;
+            background: #222222 url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23ffffff" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>') no-repeat right 12px center;
+            background-size: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus:not(:hover) {
+            border-color: #333333;
+            box-shadow: none;
+            background-color: #222222;
+        }
+        
+        .filter-select:hover {
+            border-color: #555555;
+            background-color: #333333;
+        }
+        
+        .filter-select:focus:hover {
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            background-color: #333333;
+        }
+        
+        .filter-select {
+            position: relative;
+        }
+        
+        .filter-select option {
+            background: rgba(17, 17, 17, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #ffffff;
+            padding: 15px 20px;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .filter-select option:first-child {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        
+        .filter-select option:last-child {
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            border-bottom: none;
+        }
+        
+        .filter-select option:hover,
+        .filter-select option:checked {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            color: #ffffff;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 10px rgba(255, 255, 255, 0.1);
+            transform: translateX(2px);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid rgba(128, 128, 128, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: -20px -20px 40px #333333, 20px 20px 40px #000000;
+            animation: slideIn 0.3s ease;
+            position: relative;
+        }
+        
+        .modal-header {
+            margin-bottom: 30px;
+        }
+        
+        .modal-header h2 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .modal-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+        
+        .room-info {
+            background: #222222;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #333333;
+        }
+        
+        .room-info h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .room-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+        
+        .room-detail {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .room-detail strong {
+            color: #ffffff;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .modal-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .modal-btn-primary {
+            background: #ffffff;
+            color: #000000;
+        }
+        
+        .modal-btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid rgba(128, 128, 128, 0.5);
+        }
+        
+        .modal-btn-secondary:hover {
+            background: #333333;
+            border-color: #ffffff;
+            transform: translateY(-2px);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            color: #ffffff;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="nav-brand">Admin Panel</div>
+            <div class="nav-links">
+                <div class="nav-sections">
+                    <button class="nav-section-btn active" onclick="showSection('overview')">Overview</button>
+                    <button class="nav-section-btn" onclick="showSection('rooms')">Manage Rooms</button>
+                    <button class="nav-section-btn" onclick="showSection('bookings')">All Bookings</button>
+                    <button class="nav-section-btn" onclick="showSection('students')">Students</button>
+                </div>
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin" class="profile-image" id="adminProfile">
+                <button class="Btn" onclick="location.href='index.html'">
+                    <div class="sign">
+                        <svg viewBox="0 0 512 512">
+                            <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+                        </svg>
+                    </div>
+                    <div class="text">Logout</div>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>Hostel Management Dashboard</h1>
+            <p>Complete control over rooms, bookings, and student management</p>
+        </div>
+
+
+
+        <!-- Overview Section -->
+        <div id="overviewSection" class="section">
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="title">
+                        <p class="title-text">Total Rooms</p>
+                    </div>
+                    <div class="data">
+                        <p id="totalRooms">0</p>
+                        <div class="range">
+                            <div class="fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="title">
+                        <p class="title-text">Available</p>
+                    </div>
+                    <div class="data">
+                        <p id="availableRooms">0</p>
+                        <div class="range">
+                            <div class="fill" id="availableFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="title">
+                        <p class="title-text">Occupied</p>
+                    </div>
+                    <div class="data">
+                        <p id="occupiedRooms">0</p>
+                        <div class="range">
+                            <div class="fill" id="occupiedFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="title">
+                        <p class="title-text">Students</p>
+                    </div>
+                    <div class="data">
+                        <p id="totalStudents">0</p>
+                        <div class="range">
+                            <div class="fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="title">
+                        <p class="title-text">Bookings</p>
+                    </div>
+                    <div class="data">
+                        <p id="totalBookings">0</p>
+                        <div class="range">
+                            <div class="fill" id="bookingFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="title">
+                        <p class="title-text">Approved</p>
+                    </div>
+                    <div class="data">
+                        <p id="approvedBookings">0</p>
+                        <div class="range">
+                            <div class="fill" id="approvedFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Section -->
+        <div id="roomsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: white;">Room Management</h2>
+            
+            <div class="search-filter-container">
+                <input type="text" id="roomSearch" placeholder="Search rooms..." class="search-input">
+                <select id="roomBlockFilter" class="filter-select">
+                    <option value="">All Blocks</option>
+                    <option value="Boys">Boys Block</option>
+                    <option value="Girls">Girls Block</option>
+                </select>
+                <select id="roomFloorFilter" class="filter-select">
+                    <option value="">All Floors</option>
+                    <option value="1">Floor 1</option>
+                    <option value="2">Floor 2</option>
+                    <option value="3">Floor 3</option>
+                </select>
+                <select id="roomACFilter" class="filter-select">
+                    <option value="">All AC Types</option>
+                    <option value="AC">AC</option>
+                    <option value="Non-AC">Non-AC</option>
+                </select>
+                <select id="roomTypeFilter" class="filter-select">
+                    <option value="">All Room Types</option>
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                </select>
+            </div>
+            
+            <div class="stats-grid" style="margin-bottom: 30px; grid-template-columns: repeat(6, 1fr); max-width: 1200px; margin-left: auto; margin-right: auto;">
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="boysRoomCount">0</div>
+                    <h3 class="booking-stat-label">Boys Block</h3>
+                </div>
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="girlsRoomCount">0</div>
+                    <h3 class="booking-stat-label">Girls Block</h3>
+                </div>
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="boysACCount">0</div>
+                    <h3 class="booking-stat-label">Boys AC</h3>
+                </div>
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="boysNonACCount">0</div>
+                    <h3 class="booking-stat-label">Boys Non-AC</h3>
+                </div>
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="girlsACCount">0</div>
+                    <h3 class="booking-stat-label">Girls AC</h3>
+                </div>
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="girlsNonACCount">0</div>
+                    <h3 class="booking-stat-label">Girls Non-AC</h3>
+                </div>
+            </div>
+
+            <div class="block-section">
+                <div class="block-header">Boys Block A - Room Management</div>
+                <table class="data-table" id="boysRoomsTable">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Floor</th>
+                            <th>Room No.</th>
+                            <th>Type</th>
+                            <th>AC</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="block-section">
+                <div class="block-header">Girls Block B - Room Management</div>
+                <table class="data-table" id="girlsRoomsTable">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Floor</th>
+                            <th>Room No.</th>
+                            <th>Type</th>
+                            <th>AC</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div id="bookingsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: white;">All Booking Records</h2>
+            
+            <div class="search-filter-container">
+                <input type="text" id="bookingSearch" placeholder="Search bookings..." class="search-input">
+                <select id="bookingBlockFilter" class="filter-select">
+                    <option value="">All Blocks</option>
+                    <option value="Boys">Boys Block</option>
+                    <option value="Girls">Girls Block</option>
+                </select>
+                <select id="bookingStatusFilter" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            
+            <div class="stats-grid" style="margin-bottom: 30px; grid-template-columns: repeat(2, 1fr); max-width: 400px; margin-left: auto; margin-right: auto;">
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="approvedCount">0</div>
+                    <h3 class="booking-stat-label">Approved</h3>
+                </div>
+                <div class="booking-stat-card">
+                    <div class="booking-stat-number" id="rejectedCount">0</div>
+                    <h3 class="booking-stat-label">Rejected</h3>
+                </div>
+            </div>
+
+            <table class="data-table" id="bookingsTable">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Student Name</th>
+                        <th>Register No.</th>
+                        <th>Block</th>
+                        <th>Room</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Students Section -->
+        <div id="studentsSection" class="section" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: white;">Registered Students</h2>
+            
+            <div class="search-filter-container">
+                <input type="text" id="studentSearch" placeholder="Search students..." class="search-input">
+                <select id="studentGenderFilter" class="filter-select">
+                    <option value="">All Genders</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <select id="studentDepartmentFilter" class="filter-select">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+            
+            <table class="data-table" id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Register No.</th>
+                        <th>Department</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div class="modal-overlay" id="bookingDetailsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Booking Details</h2>
+                <p>Complete information about this booking</p>
+            </div>
+            
+            <div class="room-info" id="modalBookingInfo">
+                <h3>Booking Information</h3>
+                <div class="room-details">
+                    <div class="room-detail">
+                        <strong>Booking ID:</strong> <span id="modalBookingId">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Student:</strong> <span id="modalStudentName">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Register No:</strong> <span id="modalRegisterNo">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Room:</strong> <span id="modalRoomDetails">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Status:</strong> <span id="modalBookingStatus">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Date:</strong> <span id="modalBookingDate">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeBookingModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Action Modal -->
+    <div class="modal-overlay" id="roomActionModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeRoomModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Room Status Management</h2>
+                <p>Update the availability status of this room</p>
+            </div>
+            
+            <div class="room-info" id="modalRoomInfo">
+                <h3>Room Information</h3>
+                <div class="room-details">
+                    <div class="room-detail">
+                        <strong>Room ID:</strong> <span id="modalRoomId">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Block:</strong> <span id="modalRoomBlock">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Floor:</strong> <span id="modalRoomFloor">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Room No:</strong> <span id="modalRoomNumber">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>Type:</strong> <span id="modalRoomType">-</span>
+                    </div>
+                    <div class="room-detail">
+                        <strong>AC Type:</strong> <span id="modalRoomAC">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="modalActionBtn" onclick="confirmRoomAction()">
+                    Mark Available
+                </button>
+                <button class="modal-btn modal-btn-secondary" onclick="closeRoomModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allRooms = [];
+        let allBookings = [];
+        let allStudents = [];
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.nav-section-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(section + 'Section').style.display = 'block';
+            event.target.classList.add('active');
+            
+            // Hide/show dashboard header based on section
+            const dashboardHeader = document.querySelector('.dashboard-header');
+            if (section === 'overview') {
+                dashboardHeader.style.display = 'block';
+            } else {
+                dashboardHeader.style.display = 'none';
+            }
+            
+            if (section === 'overview') {
+                loadOverview();
+            } else if (section === 'rooms') {
+                loadAllRooms();
+            } else if (section === 'bookings') {
+                loadAllBookings();
+            } else if (section === 'students') {
+                loadAllStudents();
+            }
+        }
+
+        async function loadOverview() {
+            try {
+                await Promise.all([
+                    loadRoomsData(),
+                    loadBookingsData(),
+                    loadStudentsData()
+                ]);
+
+                const totalRooms = allRooms.length;
+                const availableRooms = allRooms.filter(r => r.Availability === 'Available').length;
+                const occupiedRooms = allRooms.filter(r => r.Availability === 'Occupied').length;
+                const totalStudents = allStudents.length;
+                const totalBookings = allBookings.length;
+                const approvedBookings = allBookings.filter(b => b.Status === 'Approved').length;
+
+                document.getElementById('totalRooms').textContent = totalRooms;
+                document.getElementById('availableRooms').textContent = availableRooms;
+                document.getElementById('occupiedRooms').textContent = occupiedRooms;
+                document.getElementById('totalStudents').textContent = totalStudents;
+                document.getElementById('totalBookings').textContent = totalBookings;
+                document.getElementById('approvedBookings').textContent = approvedBookings;
+                
+                // Update progress bars
+                const availablePercent = totalRooms > 0 ? Math.round((availableRooms / totalRooms) * 100) : 0;
+                const occupiedPercent = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+                const approvedPercent = totalBookings > 0 ? Math.round((approvedBookings / totalBookings) * 100) : 0;
+                const bookingPercent = Math.min(totalBookings * 5, 100);
+                
+                if (document.getElementById('availableFill')) {
+                    document.getElementById('availableFill').style.width = availablePercent + '%';
+                }
+                if (document.getElementById('occupiedFill')) {
+                    document.getElementById('occupiedFill').style.width = occupiedPercent + '%';
+                }
+                if (document.getElementById('approvedFill')) {
+                    document.getElementById('approvedFill').style.width = approvedPercent + '%';
+                }
+                if (document.getElementById('bookingFill')) {
+                    document.getElementById('bookingFill').style.width = bookingPercent + '%';
+                }
+
+            } catch (error) {
+                console.error('Failed to load overview:', error);
+            }
+        }
+
+        async function loadRoomsData() {
+            try {
+                const allRoomsResponse = await fetch('/api/all-rooms');
+                if (allRoomsResponse.ok) {
+                    allRooms = await allRoomsResponse.json();
+                }
+            } catch (error) {
+                console.error('Failed to load rooms:', error);
+            }
+        }
+
+        async function loadBookingsData() {
+            try {
+                const response = await fetch('/api/all-bookings');
+                if (response.ok) {
+                    allBookings = await response.json();
+                }
+            } catch (error) {
+                console.error('Failed to load bookings:', error);
+            }
+        }
+
+        async function loadStudentsData() {
+            try {
+                const response = await fetch('/api/all-students');
+                if (response.ok) {
+                    allStudents = await response.json();
+                }
+            } catch (error) {
+                console.error('Failed to load students:', error);
+            }
+        }
+
+        async function loadAllRooms() {
+            await loadRoomsData();
+            
+            const boysRooms = allRooms.filter(r => r.BlockName.includes('Boys'));
+            const girlsRooms = allRooms.filter(r => r.BlockName.includes('Girls'));
+            
+            const boysAC = boysRooms.filter(r => r.ACType === 'AC').length;
+            const boysNonAC = boysRooms.filter(r => r.ACType === 'Non-AC').length;
+            const girlsAC = girlsRooms.filter(r => r.ACType === 'AC').length;
+            const girlsNonAC = girlsRooms.filter(r => r.ACType === 'Non-AC').length;
+            
+            // Update room count widgets
+            document.getElementById('boysRoomCount').textContent = boysRooms.length;
+            document.getElementById('girlsRoomCount').textContent = girlsRooms.length;
+            document.getElementById('boysACCount').textContent = boysAC;
+            document.getElementById('boysNonACCount').textContent = boysNonAC;
+            document.getElementById('girlsACCount').textContent = girlsAC;
+            document.getElementById('girlsNonACCount').textContent = girlsNonAC;
+            
+            populateRoomsTable('boysRoomsTable', boysRooms);
+            populateRoomsTable('girlsRoomsTable', girlsRooms);
+        }
+
+        function populateRoomsTable(tableId, rooms) {
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            tbody.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const row = document.createElement('tr');
+                const statusClass = room.Availability === 'Available' ? 'approved' : 'rejected';
+                
+                row.innerHTML = `
+                    <td>${room.RoomID}</td>
+                    <td>${room.FloorNumber}</td>
+                    <td>${room.RoomNumber}</td>
+                    <td>${room.RoomType}</td>
+                    <td>${room.ACType}</td>
+                    <td><span class="status ${statusClass}">${room.Availability}</span></td>
+                    <td>
+                        <button class="action-btn btn-toggle" onclick="toggleRoomStatus(${room.RoomID}, '${room.Availability}')">
+                            ${room.Availability === 'Available' ? 'Mark Occupied' : 'Mark Available'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        let currentRoomData = null;
+        
+        function toggleRoomStatus(roomId, currentStatus) {
+            // Find the room data
+            const room = allRooms.find(r => r.RoomID === roomId);
+            if (!room) return;
+            
+            currentRoomData = {
+                ...room,
+                currentStatus: currentStatus,
+                newStatus: currentStatus === 'Available' ? 'Occupied' : 'Available'
+            };
+            
+            // Populate modal with room information
+            document.getElementById('modalRoomId').textContent = room.RoomID;
+            document.getElementById('modalRoomBlock').textContent = room.BlockName;
+            document.getElementById('modalRoomFloor').textContent = room.FloorNumber;
+            document.getElementById('modalRoomNumber').textContent = room.RoomNumber;
+            document.getElementById('modalRoomType').textContent = room.RoomType;
+            document.getElementById('modalRoomAC').textContent = room.ACType;
+            
+            // Update action button text
+            const actionBtn = document.getElementById('modalActionBtn');
+            actionBtn.textContent = currentStatus === 'Available' ? 'Mark as Occupied' : 'Mark as Available';
+            
+            // Show modal
+            document.getElementById('roomActionModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeRoomModal() {
+            document.getElementById('roomActionModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+            currentRoomData = null;
+        }
+        
+        async function confirmRoomAction() {
+            if (!currentRoomData) return;
+            
+            try {
+                const response = await fetch('/api/toggle-room-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        roomId: currentRoomData.RoomID,
+                        newStatus: currentRoomData.newStatus
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success notification
+                    showNotification(`Room ${currentRoomData.RoomNumber} status updated to ${currentRoomData.newStatus}`);
+                    
+                    // Close modal and refresh data
+                    closeRoomModal();
+                    loadAllRooms();
+                    loadOverview();
+                } else {
+                    showNotification('Failed to update room status', 'error');
+                }
+            } catch (error) {
+                showNotification('Error updating room status', 'error');
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('roomActionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRoomModal();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('roomActionModal').classList.contains('show')) {
+                    closeRoomModal();
+                }
+                if (document.getElementById('bookingDetailsModal').classList.contains('show')) {
+                    closeBookingModal();
+                }
+            }
+        });
+        
+        // Close booking modal when clicking outside
+        document.getElementById('bookingDetailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBookingModal();
+            }
+        });
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(239, 68, 68, 0.9)';
+                notification.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        async function loadAllBookings() {
+            await loadBookingsData();
+            await loadStudentsData();
+            
+            const approved = allBookings.filter(b => b.Status === 'Approved').length;
+            const rejected = allBookings.filter(b => b.Status === 'Rejected').length;
+            
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            
+            populateBookingsTable(allBookings);
+        }
+
+        async function loadAllStudents() {
+            await loadStudentsData();
+            await loadBookingsData();
+            
+            populateDepartmentFilter();
+            populateStudentsTable(allStudents);
+        }
+
+        function viewBookingDetails(bookingId) {
+            const booking = allBookings.find(b => b.BookingID === bookingId);
+            if (!booking) return;
+            
+            document.getElementById('modalBookingId').textContent = booking.BookingID;
+            document.getElementById('modalStudentName').textContent = booking.StudentName || 'Unknown';
+            document.getElementById('modalRegisterNo').textContent = booking.RegisterNumber || 'N/A';
+            document.getElementById('modalRoomDetails').textContent = `${booking.BlockName || 'N/A'} - ${booking.RoomNumber || 'N/A'}`;
+            document.getElementById('modalBookingStatus').textContent = booking.Status;
+            document.getElementById('modalBookingDate').textContent = new Date(booking.BookingDate).toLocaleDateString();
+            
+            document.getElementById('bookingDetailsModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeBookingModal() {
+            document.getElementById('bookingDetailsModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Search and Filter Functions
+        function setupSearchAndFilters() {
+            // Room search and filters
+            document.getElementById('roomSearch').addEventListener('input', filterRooms);
+            document.getElementById('roomBlockFilter').addEventListener('change', filterRooms);
+            document.getElementById('roomFloorFilter').addEventListener('change', filterRooms);
+            document.getElementById('roomACFilter').addEventListener('change', filterRooms);
+            document.getElementById('roomTypeFilter').addEventListener('change', filterRooms);
+            
+            // Booking search and filters
+            document.getElementById('bookingSearch').addEventListener('input', filterBookings);
+            document.getElementById('bookingBlockFilter').addEventListener('change', filterBookings);
+            document.getElementById('bookingStatusFilter').addEventListener('change', filterBookings);
+            
+            // Student search and filters
+            document.getElementById('studentSearch').addEventListener('input', filterStudents);
+            document.getElementById('studentGenderFilter').addEventListener('change', filterStudents);
+            document.getElementById('studentDepartmentFilter').addEventListener('change', filterStudents);
+        }
+        
+        function filterRooms() {
+            const searchTerm = document.getElementById('roomSearch').value.toLowerCase();
+            const blockFilter = document.getElementById('roomBlockFilter').value;
+            const floorFilter = document.getElementById('roomFloorFilter').value;
+            const acFilter = document.getElementById('roomACFilter').value;
+            const typeFilter = document.getElementById('roomTypeFilter').value;
+            
+            let filteredRooms = allRooms.filter(room => {
+                const matchesSearch = room.RoomNumber.toString().includes(searchTerm) || 
+                                    room.BlockName.toLowerCase().includes(searchTerm);
+                const matchesBlock = !blockFilter || room.BlockName.includes(blockFilter);
+                const matchesFloor = !floorFilter || room.FloorNumber.toString() === floorFilter;
+                const matchesAC = !acFilter || room.ACType === acFilter;
+                const matchesType = !typeFilter || room.RoomType === typeFilter;
+                
+                return matchesSearch && matchesBlock && matchesFloor && matchesAC && matchesType;
+            });
+            
+            const boysRooms = filteredRooms.filter(r => r.BlockName.includes('Boys'));
+            const girlsRooms = filteredRooms.filter(r => r.BlockName.includes('Girls'));
+            
+            populateRoomsTable('boysRoomsTable', boysRooms);
+            populateRoomsTable('girlsRoomsTable', girlsRooms);
+        }
+        
+        function filterBookings() {
+            const searchTerm = document.getElementById('bookingSearch').value.toLowerCase();
+            const blockFilter = document.getElementById('bookingBlockFilter').value;
+            const statusFilter = document.getElementById('bookingStatusFilter').value;
+            
+            let filteredBookings = allBookings.filter(booking => {
+                const matchesSearch = (booking.StudentName || '').toLowerCase().includes(searchTerm) ||
+                                    (booking.RegisterNumber || '').toLowerCase().includes(searchTerm);
+                const matchesBlock = !blockFilter || (booking.BlockName || '').includes(blockFilter);
+                const matchesStatus = !statusFilter || booking.Status === statusFilter;
+                
+                return matchesSearch && matchesBlock && matchesStatus;
+            });
+            
+            populateBookingsTable(filteredBookings);
+        }
+        
+        function filterStudents() {
+            const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+            const genderFilter = document.getElementById('studentGenderFilter').value;
+            const departmentFilter = document.getElementById('studentDepartmentFilter').value;
+            
+            let filteredStudents = allStudents.filter(student => {
+                const matchesSearch = student.Name.toLowerCase().includes(searchTerm) ||
+                                    student.RegisterNumber.toLowerCase().includes(searchTerm) ||
+                                    student.Email.toLowerCase().includes(searchTerm);
+                const matchesGender = !genderFilter || student.Gender === genderFilter;
+                const matchesDepartment = !departmentFilter || student.Department === departmentFilter;
+                
+                return matchesSearch && matchesGender && matchesDepartment;
+            });
+            
+            populateStudentsTable(filteredStudents);
+        }
+        
+        function populateBookingsTable(bookings) {
+            const tbody = document.querySelector('#bookingsTable tbody');
+            tbody.innerHTML = '';
+            
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                const statusClass = booking.Status.toLowerCase();
+                
+                row.innerHTML = `
+                    <td>${booking.BookingID}</td>
+                    <td>${booking.StudentName || 'Unknown'}</td>
+                    <td>${booking.RegisterNumber || 'N/A'}</td>
+                    <td>${booking.BlockName || 'N/A'}</td>
+                    <td>${booking.RoomNumber || 'N/A'}</td>
+                    <td><span class="status ${statusClass}">${booking.Status}</span></td>
+                    <td>${new Date(booking.BookingDate).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="viewBookingDetails(${booking.BookingID})">
+                            View
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function populateStudentsTable(students) {
+            const tbody = document.querySelector('#studentsTable tbody');
+            tbody.innerHTML = '';
+            
+            students.forEach(student => {
+                const hasBooking = allBookings.some(b => b.UserID === student.UserID && b.Status === 'Approved');
+                const status = hasBooking ? 'Has Room' : 'No Room';
+                const statusClass = hasBooking ? 'approved' : 'pending';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.UserID}</td>
+                    <td>${student.Name}</td>
+                    <td>${student.RegisterNumber}</td>
+                    <td>${student.Department}</td>
+                    <td>${student.Gender}</td>
+                    <td>${student.Email}</td>
+                    <td><span class="status ${statusClass}">${status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function populateDepartmentFilter() {
+            const departments = [...new Set(allStudents.map(s => s.Department))];
+            const select = document.getElementById('studentDepartmentFilter');
+            
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept;
+                option.textContent = dept;
+                select.appendChild(option);
+            });
+        }
+
+        // Initialize
+        const userType = localStorage.getItem('userType');
+        if (userType !== 'admin') {
+            window.location.href = 'login.html';
+        }
+        
+        loadOverview();
+        setupSearchAndFilters();
+    </script>
+</body>
+</html>
