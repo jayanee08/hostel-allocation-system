@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  hostel-app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SERVER=hostel-server-2024.database.windows.net
+      - DB_NAME=hostel_management
+      - DB_USER=hostel_admin
+      - DB_PASSWORD=Nikhil&2005
+      - OPENAI_API_KEY=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
+      - PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

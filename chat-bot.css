@@ -1,0 +1,120 @@
+.container_chat_bot {
+  position: fixed;
+  bottom: 80px;
+  right: 50px;
+  width: 380px;
+  z-index: 1000;
+}
+
+.container-chat-options {
+  background: #111111;
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid #333333;
+  box-shadow: -10px -10px 20px #333333, 10px 10px 20px #000000;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chat-bot textarea {
+  width: 100%;
+  min-height: 80px;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 15px;
+  padding: 15px;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+}
+
+.chat-bot textarea::placeholder {
+  color: #888888;
+}
+
+.chat-bot textarea:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btns-add {
+  display: flex;
+  gap: 10px;
+}
+
+.btns-add button {
+  width: 35px;
+  height: 35px;
+  background: #333333;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btns-add button:hover {
+  background: #444444;
+  transform: translateY(-2px);
+}
+
+.btn-submit {
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: #cccccc;
+  transform: translateY(-2px);
+}
+
+.btn-submit svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tags {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.tags span {
+  background: #333333;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tags span:hover {
+  background: #444444;
+  transform: translateY(-1px);
+}
