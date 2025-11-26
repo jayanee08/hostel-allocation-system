@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const ChatbotService = require('./chatbot-service');
 
 
 
@@ -64,6 +63,7 @@ async function connectDB() {
 // Initialize database connection
 connectDB().catch(() => {});
 
+<<<<<<< HEAD
 let chatbotService;
 setTimeout(() => {
     if (pool) {
@@ -73,6 +73,10 @@ setTimeout(() => {
         console.log('❌ Chatbot service not initialized - no database connection');
     }
 }, 2000);
+=======
+// Chatbot service disabled for deployment
+let chatbotService = null;
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
 
 // Routes
 app.get('/', (req, res) => {
@@ -327,6 +331,7 @@ app.post('/api/toggle-room-status', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Room ID and new status are required' });
         }
         
+<<<<<<< HEAD
         // If changing from Occupied to Available, reject the approved booking
         if (newStatus === 'Available') {
             await pool.request()
@@ -335,6 +340,24 @@ app.post('/api/toggle-room-status', async (req, res) => {
                         WHERE RoomID = @roomId AND Status = 'Approved'`);
         }
         
+=======
+        // If admin is making an occupied room available, reject the previous booking
+        if (newStatus === 'Available') {
+            // Find the current approved booking for this room
+            const currentBooking = await pool.request()
+                .input('roomId', sql.Int, roomId)
+                .query('SELECT BookingID, UserID FROM Bookings WHERE RoomID = @roomId AND Status = \'Approved\'');
+            
+            if (currentBooking.recordset.length > 0) {
+                // Update the booking status to rejected with admin message
+                await pool.request()
+                    .input('bookingId', sql.Int, currentBooking.recordset[0].BookingID)
+                    .query('UPDATE Bookings SET Status = \'Rejected\', AdminMessage = \'Your room booking is rejected by the admin and made as Available. Book your room again.\' WHERE BookingID = @bookingId');
+            }
+        }
+        
+        // Update room status
+>>>>>>> ba24849c401000dfadda9388747bb615161fd56a
         const request = pool.request();
         await request
             .input('roomId', sql.Int, roomId)
@@ -352,12 +375,16 @@ app.post('/api/toggle-room-status', async (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message, userContext } = req.body;
+        const { message } = req.body;
         
         if (!message || message.trim().length === 0) {
             return res.status(400).json({ success: false, message: 'Message is required' });
         }
         
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ba24849c401000dfadda9388747bb615161fd56a
         console.log('Received message:', message);
         
         if (!chatbotService) {
@@ -370,6 +397,28 @@ app.post('/api/chat', async (req, res) => {
         
         const response = await chatbotService.processMessage(message.trim(), userContext);
         console.log('Sending response:', response);
+<<<<<<< HEAD
+=======
+=======
+        // Simple chatbot responses
+        const responses = {
+            'hello': 'Hi! I\'m Alex, your hostel assistant. How can I help you today?',
+            'rooms': 'You can view available rooms in your dashboard after logging in.',
+            'booking': 'To book a room, go to your student dashboard and select an available room.',
+            'login': 'Use your registered email and password to login. Contact admin if you forgot your password.',
+            'default': 'I\'m here to help! You can ask about room booking, login issues, or general information.'
+        };
+        
+        const msg = message.toLowerCase();
+        let response = responses.default;
+        
+        if (msg.includes('hello') || msg.includes('hi')) response = responses.hello;
+        else if (msg.includes('room')) response = responses.rooms;
+        else if (msg.includes('book')) response = responses.booking;
+        else if (msg.includes('login')) response = responses.login;
+        
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
+>>>>>>> ba24849c401000dfadda9388747bb615161fd56a
         res.json({ success: true, response });
         
     } catch (error) {
@@ -395,12 +444,22 @@ app.get('/api/debug/users', async (req, res) => {
 // Test API endpoint
 app.get('/api/test-ai', async (req, res) => {
     try {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ba24849c401000dfadda9388747bb615161fd56a
         if (!chatbotService) {
             return res.json({ success: false, message: 'Chatbot service not initialized' });
         }
         
         const testResponse = await chatbotService.processMessage('how many rooms are available in boys block');
         res.json({ success: true, response: testResponse, service: 'New Alex Chatbot' });
+<<<<<<< HEAD
+=======
+=======
+        res.json({ success: true, response: 'Chatbot service is running!', service: 'Simple Chatbot' });
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
+>>>>>>> ba24849c401000dfadda9388747bb615161fd56a
     } catch (error) {
         res.json({ success: false, error: error.message });
     }

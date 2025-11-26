@@ -1234,7 +1234,24 @@
                         ${booking.Status === 'Approved' ? 
                             '<div class="room-actions"><p style="color: #22c55e; text-align: center; font-weight: bold;">Congratulations! Your room is confirmed.</p></div>' : 
                             booking.Status === 'Rejected' ? 
+<<<<<<< HEAD
                             `<div class="room-actions"><p style="color: #ef4444; text-align: center; font-weight: bold;">${booking.RejectionMessage || 'This booking was not successful. Try booking another room.'}</p></div>` :
+=======
+<<<<<<< HEAD
+                            '<div class="room-actions"><p style="color: #ef4444; text-align: center;">This booking was not successful. Try booking another room.</p></div>' :
+=======
+                            `<div class="room-actions">
+                                <p style="color: #ef4444; text-align: center; font-weight: bold; margin-bottom: 10px;">Booking Rejected</p>
+                                ${booking.AdminMessage ? 
+                                    `<p style="color: #ef4444; text-align: center; font-size: 0.9rem; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">${booking.AdminMessage}</p>` : 
+                                    '<p style="color: #ef4444; text-align: center;">This booking was not successful. Try booking another room.</p>'
+                                }
+                                <button class="btn btn-primary" onclick="showSection('rooms')" style="margin-top: 15px; padding: 10px 20px; font-size: 0.9rem;">
+                                    Book Another Room
+                                </button>
+                            </div>` :
+>>>>>>> 19dd94f0b185677226cb0f094c64f9baec816ab3
+>>>>>>> ba24849c401000dfadda9388747bb615161fd56a
                             '<div class="room-actions"><p style="color: #fbbf24; text-align: center;">Your booking is being processed...</p></div>'
                         }
                     `;
